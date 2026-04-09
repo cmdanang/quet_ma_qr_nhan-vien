@@ -9,35 +9,23 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.0/lucide.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
+        body { font-family: 'Roboto', sans-serif; background-color: #f0f4f8; } [cite: 2]
+        .glass-card { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); border: 1px solid #d1d5db; } [cite: 3]
+        #reader { width: 100% !important; border: none !important; border-radius: 1.5rem; overflow: hidden; } [cite: 4]
         
-        /* Màu chủ đạo Co.opmart: Xanh #005691, Đỏ #ed1c24 */
-        body { font-family: 'Roboto', sans-serif; background-color: #f0f4f8; }
-        .glass-card { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); border: 1px solid #d1d5db; }
-        
-        #reader { width: 100% !important; border: none !important; border-radius: 1.5rem; overflow: hidden; }
-        
-        /* Tùy chỉnh nút bấm theo màu Co.opmart */
+        /* Màu xanh Co.opmart #005691 */
         #reader__dashboard_section_csr button {
-            background-color: #005691 !important;
-            color: white !important;
-            padding: 10px 20px !important;
-            border-radius: 12px !important;
-            border: none !important;
-            font-weight: 700 !important;
-            text-transform: uppercase;
-            cursor: pointer;
-        }
-
-        .pulse-online { animation: pulse-coop 2s infinite; }
+            background-color: #005691 !important; color: white !important;
+            padding: 10px 20px !important; border-radius: 12px !important;
+            border: none !important; font-weight: 700 !important; text-transform: uppercase;
+        } [cite: 5]
+        .pulse-online { animation: pulse-coop 2s infinite; } [cite: 8]
         @keyframes pulse-coop {
-            0% { box-shadow: 0 0 0 0 rgba(237, 28, 36, 0.4); }
-            70% { box-shadow: 0 0 0 8px rgba(237, 28, 36, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(237, 28, 36, 0); }
+            0% { box-shadow: 0 0 0 0 rgba(0, 86, 145, 0.4); }
+            70% { box-shadow: 0 0 0 8px rgba(0, 86, 145, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 86, 145, 0); }
         }
-
-        .scanner-active { border-color: #005691 !important; background-color: #f0f7ff !important; }
-        .emp-card { transition: all 0.3s ease; border-left: 4px solid transparent; }
-        .emp-card:hover { transform: scale(1.02); border-left: 4px solid #ed1c24; }
+        .scanner-active { border: 3px solid #005691 !important; background-color: #eff6ff !important; } [cite: 12]
     </style>
 </head>
 <body class="min-h-screen">
@@ -46,68 +34,62 @@
         <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             <div class="flex items-center gap-4">
                 <div class="bg-white p-1.5 rounded-lg shadow-md">
-                    <svg class="w-8 h-8 text-[#005691]" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
-                    </svg>
+                    <i data-lucide="shopping-cart" class="w-8 h-8 text-[#005691]"></i> [cite: 15]
                 </div>
                 <div>
                     <h1 class="text-xl font-black text-white tracking-tight uppercase">SmartScan Pro</h1>
                     <p class="text-[9px] font-bold text-blue-200 tracking-[0.2em] uppercase leading-none">Co.opmart Đà Nẵng</p>
                 </div>
             </div>
-            <div id="live-clock" class="text-xs font-black text-white bg-blue-800/50 px-4 py-2 rounded-full border border-blue-400/30">--:--:--</div>
+            <div id="live-clock" class="text-xs font-black text-white bg-blue-800/50 px-4 py-2 rounded-full border border-blue-400/30">00:00:00</div> [cite: 16]
         </div>
     </nav>
 
     <main class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
         <div class="lg:col-span-4 space-y-6">
             <div id="scanner-container" class="glass-card rounded-[2.5rem] p-7 shadow-xl transition-all duration-300">
                 <div class="flex items-center justify-between mb-5">
                     <h2 class="font-black text-slate-800 flex items-center gap-2 uppercase text-sm">
-                        <i data-lucide="aperture" class="w-5 h-5 text-[#ed1c24]"></i>
+                        <i data-lucide="aperture" class="w-5 h-5 text-[#ed1c24]"></i> [cite: 17]
                         Trạm Kiểm Soát
                     </h2>
-                    <div id="camera-status" class="text-[9px] font-black px-3 py-1 rounded-full bg-slate-100 text-slate-500 uppercase">Offline</div>
+                    <div class="flex flex-col items-end gap-1">
+                        <span id="external-scanner-status" class="text-[8px] font-black px-2 py-0.5 rounded-full bg-green-100 text-green-600 uppercase">Máy quét: OK</span> [cite: 18]
+                        <span id="camera-status" class="text-[8px] font-black px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 uppercase">Camera: Off</span> [cite: 18]
+                    </div>
                 </div>
                 
                 <div class="relative group">
                     <div id="reader" class="bg-slate-900 aspect-square shadow-2xl">
                         <div class="text-white text-center p-6" id="camera-placeholder">
                             <div class="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 border border-white/10">
-                                <i data-lucide="scan" class="w-10 h-10 text-blue-400"></i>
+                                <i data-lucide="scan" class="w-10 h-10 text-blue-400"></i> [cite: 20]
                             </div>
-                            <p class="text-[10px] font-black uppercase tracking-widest opacity-60">Chờ tín hiệu quét</p>
+                            <p class="text-[10px] font-black uppercase tracking-widest opacity-60">Chờ lệnh quét từ Anh</p> [cite: 21]
                         </div>
                     </div>
                 </div>
 
                 <div class="mt-6 space-y-4">
-                    <button id="start-btn" onclick="initScanner()" class="w-full py-4 bg-[#005691] hover:bg-[#004675] text-white rounded-2xl font-black text-sm flex items-center justify-center gap-3 shadow-lg shadow-blue-900/20 transition-all active:scale-95 uppercase">
-                        <i data-lucide="camera" class="w-5 h-5"></i>
+                    <button id="start-btn" onclick="initScanner()" class="w-full py-4 bg-[#005691] hover:bg-[#004675] text-white rounded-2xl font-black text-sm flex items-center justify-center gap-3 shadow-lg transition-all active:scale-95 uppercase">
+                        <i data-lucide="camera" class="w-5 h-5"></i> [cite: 23]
                         Kích hoạt Camera
                     </button>
-                    
                     <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                        <label class="block text-[9px] font-black text-slate-400 uppercase mb-2 tracking-widest">Đồng bộ dữ liệu</label>
-                        <input type="text" id="script-url" placeholder="Dán link Google Script..." class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-xs focus:ring-2 focus:ring-[#005691] outline-none font-medium">
+                        <label class="block text-[9px] font-black text-slate-400 uppercase mb-2 tracking-widest">Đồng bộ Google Sheets</label> [cite: 24]
+                        <input type="text" id="script-url" placeholder="Dán link App Script..." class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-xs outline-none font-medium focus:ring-2 focus:ring-[#005691]"> [cite: 25]
                     </div>
                 </div>
             </div>
 
-            <div class="glass-card rounded-[2.5rem] p-7 shadow-xl bg-[#005691] text-white relative overflow-hidden">
-                <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/5 rounded-full"></div>
-                <h3 class="font-black text-xs mb-5 flex items-center gap-2 opacity-80 uppercase tracking-widest">
-                    <i data-lucide="bar-chart-3" class="w-4 h-4 text-blue-300"></i>
-                    Báo cáo nhanh
-                </h3>
+            <div class="glass-card rounded-[2.5rem] p-7 shadow-xl bg-[#005691] text-white">
                 <div class="grid grid-cols-2 gap-4">
                     <div class="bg-blue-800/50 p-5 rounded-3xl border border-blue-400/20 shadow-inner">
-                        <p class="text-[9px] font-black uppercase text-blue-300">Đang trực</p>
+                        <p class="text-[9px] font-black uppercase text-blue-300">Đang trực</p> [cite: 28]
                         <p class="text-4xl font-black mt-1" id="stat-present">0</p>
                     </div>
                     <div class="bg-blue-800/50 p-5 rounded-3xl border border-blue-400/20 shadow-inner">
-                        <p class="text-[9px] font-black uppercase text-blue-300">Tổng ca</p>
+                        <p class="text-[9px] font-black uppercase text-blue-300">Tổng nhân sự</p> [cite: 29]
                         <p class="text-4xl font-black mt-1" id="stat-total-emp">0</p>
                     </div>
                 </div>
@@ -115,39 +97,37 @@
         </div>
 
         <div class="lg:col-span-8 space-y-6">
-            
-            <div id="result-card" class="glass-card rounded-[2.5rem] p-8 border-l-[16px] border-l-[#ed1c24] hidden shadow-2xl animate-in fade-in slide-in-from-right-4">
+            <div id="result-card" class="glass-card rounded-[2.5rem] p-8 border-l-[16px] border-l-[#ed1c24] hidden shadow-2xl animate-in fade-in slide-in-from-right-4 duration-300">
                 <div class="flex justify-between items-start mb-8">
                     <div class="flex items-center gap-6">
-                        <div id="res-avatar" class="w-24 h-24 bg-slate-100 rounded-[2rem] flex items-center justify-center text-[#005691] shadow-inner border border-slate-200">
-                            <i data-lucide="user-check" class="w-12 h-12"></i>
+                        <div id="res-avatar" class="w-24 h-24 bg-blue-50 text-[#005691] rounded-[2rem] flex items-center justify-center shadow-inner border border-blue-100">
+                            <i data-lucide="user-check" class="w-12 h-12"></i> [cite: 31]
                         </div>
                         <div>
-                            <h2 class="text-4xl font-black text-slate-900 uppercase tracking-tighter" id="res-name">---</h2>
+                            <h2 class="text-4xl font-black text-slate-900 uppercase tracking-tighter" id="res-name">---</h2> [cite: 32]
                             <div class="flex items-center gap-3 mt-2">
-                                <span class="bg-[#005691] text-white px-3 py-1 rounded-lg text-[10px] font-black uppercase" id="res-id">ID: ---</span>
-                                <span class="bg-red-50 text-[#ed1c24] border border-red-100 px-3 py-1 rounded-lg text-[10px] font-black uppercase" id="res-dept-badge">BỘ PHẬN</span>
+                                <span class="bg-[#005691] text-white px-3 py-1 rounded-lg text-[10px] font-black" id="res-id">ID: ---</span> [cite: 33]
+                                <span class="bg-red-50 text-[#ed1c24] border border-red-100 px-3 py-1 rounded-lg text-[10px] font-black" id="res-dept-badge">BỘ PHẬN</span> [cite: 33]
                             </div>
                         </div>
                     </div>
-                    <div id="res-badge" class="px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-lg">--</div>
+                    <div id="res-badge" class="px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-lg">--</div> [cite: 34]
                 </div>
-
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="p-5 bg-slate-50 rounded-3xl border border-slate-100 shadow-sm">
-                        <p class="text-[9px] text-slate-400 font-black uppercase mb-2">Giờ Vào</p>
+                    <div class="p-5 bg-slate-50 rounded-3xl border border-slate-100">
+                        <p class="text-[9px] text-slate-400 font-black uppercase mb-2">Giờ Vào</p> [cite: 35]
                         <p class="font-black text-slate-800 text-2xl" id="res-in">--:--</p>
                     </div>
-                    <div class="p-5 bg-slate-50 rounded-3xl border border-slate-100 shadow-sm">
-                        <p class="text-[9px] text-slate-400 font-black uppercase mb-2">Giờ Ra</p>
+                    <div class="p-5 bg-slate-50 rounded-3xl border border-slate-100">
+                        <p class="text-[9px] text-slate-400 font-black uppercase mb-2">Giờ Ra</p> [cite: 36]
                         <p class="font-black text-slate-800 text-2xl" id="res-out">--:--</p>
                     </div>
-                    <div class="p-5 bg-blue-50 rounded-3xl border border-blue-100 shadow-sm">
-                        <p class="text-[9px] text-[#005691] font-black uppercase mb-2">Ca này</p>
+                    <div class="p-5 bg-blue-50 rounded-3xl border border-blue-100">
+                        <p class="text-[9px] text-[#005691] font-black uppercase mb-2">Ca này</p> [cite: 37]
                         <p class="font-black text-[#005691] text-2xl" id="res-current">--:--</p>
                     </div>
-                    <div class="p-5 bg-red-50 rounded-3xl border border-red-100 shadow-sm">
-                        <p class="text-[9px] text-[#ed1c24] font-black uppercase mb-2">Tích lũy</p>
+                    <div class="p-5 bg-red-50 rounded-3xl border border-red-100">
+                        <p class="text-[9px] text-[#ed1c24] font-black uppercase mb-2">Tổng tích lũy</p> [cite: 38]
                         <p class="font-black text-[#ed1c24] text-2xl" id="res-total">--:--</p>
                     </div>
                 </div>
@@ -157,26 +137,159 @@
                 <div class="flex items-center justify-between mb-8">
                     <div>
                         <h3 class="font-black text-slate-800 flex items-center gap-2 uppercase text-sm">
-                            <i data-lucide="users" class="w-5 h-5 text-[#005691]"></i>
+                            <i data-lucide="users" class="w-5 h-5 text-[#005691]"></i> [cite: 41]
                             Nhân sự tại điểm bán
                         </h3>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase mt-1 tracking-wider">Danh sách đang có mặt tại Co.opmart Đà Nẵng</p>
                     </div>
-                    <button onclick="simulateScan()" class="text-[9px] font-black text-white bg-[#ed1c24] px-5 py-2.5 rounded-xl hover:bg-[#d01920] shadow-lg shadow-red-100 transition-all uppercase tracking-widest">Demo</button>
+                    <button onclick="simulateScan()" class="text-[9px] font-black text-white bg-[#ed1c24] px-5 py-2.5 rounded-xl hover:bg-[#d01920] shadow-lg uppercase tracking-widest">Quét Thử</button> [cite: 42]
                 </div>
-                
                 <div id="employee-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                    <div class="col-span-full py-16 text-center text-slate-300 font-black uppercase text-xs tracking-[0.3em] bg-slate-50/50 rounded-[2.5rem] border-2 border-dashed border-slate-200">
-                        Chưa có lượt quét nào
-                    </div>
+                    <div class="col-span-full py-16 text-center text-slate-300 font-black uppercase text-xs tracking-[0.3em] bg-slate-50/50 rounded-[2.5rem] border-2 border-dashed border-slate-200">Chưa có dữ liệu</div> [cite: 43]
                 </div>
             </div>
         </div>
     </main>
 
+    <div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] transform translate-y-20 opacity-0 transition-all duration-500">
+        <div id="toast-box" class="bg-slate-900 text-white px-8 py-4 rounded-full shadow-2xl flex items-center gap-4 border border-slate-700">
+            <i data-lucide="check-circle" id="toast-icon" class="w-5 h-5 text-[#005691]"></i> [cite: 49]
+            <span id="toast-msg" class="text-sm font-bold">Xác nhận</span> [cite: 50]
+        </div>
+    </div>
+
     <script>
-        // Copy toàn bộ logic Script từ file cũ của Anh và dán vào đây 
-        // Đảm bảo giữ nguyên các hàm: initScanner, handleScanResult, v.v.
+        let scanner = null; let logs = {}; let resetTimeout = null; [cite: 51]
+        let barcodeBuffer = ""; let lastBarcodeTime = 0; [cite: 51]
+
+        const getT = (d) => d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }); [cite: 53]
+        const getD = (d) => d.toLocaleDateString('vi-VN'); [cite: 54]
+        
+        function formatDuration(ms) {
+            if (!ms || ms < 0) return "00:00"; [cite: 55]
+            const totalMinutes = Math.floor(ms / 60000); [cite: 55]
+            const h = Math.floor(totalMinutes / 60); const m = totalMinutes % 60; [cite: 56]
+            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`; [cite: 56]
+        }
+
+        window.onload = function() {
+            lucide.createIcons(); [cite: 52]
+            setInterval(() => {
+                const now = new Date();
+                document.getElementById('live-clock').innerText = `${getT(now)} - ${getD(now)}`; [cite: 57, 58]
+            }, 1000);
+            document.addEventListener('keydown', (e) => {
+                const currentTime = new Date().getTime();
+                if (currentTime - lastBarcodeTime > 100) barcodeBuffer = ""; [cite: 60]
+                if (e.key === 'Enter') {
+                    if (barcodeBuffer.length > 2) handleScanResult(barcodeBuffer); [cite: 61]
+                    barcodeBuffer = ""; [cite: 62]
+                } else if (e.key.length === 1) barcodeBuffer += e.key; [cite: 62]
+                lastBarcodeTime = currentTime; [cite: 63]
+            });
+            const savedUrl = localStorage.getItem('qr_sync_url_v2'); [cite: 59]
+            if (savedUrl) document.getElementById('script-url').value = savedUrl; [cite: 59]
+        };
+
+        async function initScanner() {
+            if (scanner) await scanner.stop(); [cite: 72]
+            const status = document.getElementById('camera-status');
+            const placeholder = document.getElementById('camera-placeholder');
+            try {
+                scanner = new Html5Qrcode("reader"); [cite: 77]
+                await scanner.start({ facingMode: "environment" }, { fps: 20, qrbox: { width: 250, height: 250 } }, (text) => {
+                    handleScanResult(text); [cite: 78]
+                });
+                status.innerText = "Camera: Online"; status.className = "text-[8px] font-black px-2 py-0.5 rounded-full bg-green-100 text-green-600 uppercase"; [cite: 79, 80]
+                placeholder.classList.add('hidden'); [cite: 76]
+            } catch (err) {
+                status.innerText = "Camera: Lỗi"; status.className = "text-[8px] font-black px-2 py-0.5 rounded-full bg-red-100 text-red-600 uppercase"; [cite: 82, 83]
+                alert("Anh hãy cấp quyền Camera cho trình duyệt nhé!");
+            }
+        }
+
+        function handleScanResult(text) {
+            if (resetTimeout) clearTimeout(resetTimeout); [cite: 86]
+            const parts = text.split('|'); [cite: 88]
+            const data = parts.length >= 2 ? { id: parts[0].trim(), name: parts[1].trim(), dept: parts[2]?.trim() || 'Co.opmart' } : { id: text.trim(), name: "NV " + text.trim(), dept: "Siêu thị" }; [cite: 89, 90, 91]
+            
+            const now = new Date(); const id = data.id; [cite: 92]
+            const isInSession = logs[id] && logs[id].timeIn && !logs[id].timeOut; [cite: 93]
+            
+            if (!isInSession) {
+                logs[id] = { ...data, timeIn: now, timeOut: null, totalWorkMs: (logs[id]?.totalWorkMs || 0) }; [cite: 94, 95]
+                updateUI(logs[id], "VÀO"); [cite: 98]
+            } else {
+                logs[id].timeOut = now; [cite: 96]
+                logs[id].currentSessionMs = now - logs[id].timeIn; [cite: 97]
+                logs[id].totalWorkMs += logs[id].currentSessionMs; [cite: 97]
+                updateUI(logs[id], "RA"); [cite: 98]
+            }
+            syncToSheets(logs[id], !isInSession ? "VÀO" : "RA"); [cite: 98]
+        }
+
+        function updateUI(emp, action) {
+            const card = document.getElementById('result-card');
+            card.classList.remove('hidden'); [cite: 102]
+            document.getElementById('res-name').innerText = emp.name; [cite: 103]
+            document.getElementById('res-id').innerText = `ID: ${emp.id}`; [cite: 103]
+            document.getElementById('res-dept-badge').innerText = emp.dept; [cite: 103]
+            document.getElementById('res-in').innerText = getT(emp.timeIn).substring(0, 5); [cite: 104]
+            document.getElementById('res-out').innerText = emp.timeOut ? getT(emp.timeOut).substring(0, 5) : '--:--'; [cite: 105]
+            document.getElementById('res-current').innerText = action === "RA" ? formatDuration(emp.currentSessionMs) : "--:--"; [cite: 106]
+            document.getElementById('res-total').innerText = formatDuration(emp.totalWorkMs); [cite: 106]
+            
+            const badge = document.getElementById('res-badge');
+            badge.innerText = action === 'VÀO' ? 'VÀO CA' : 'RA CA'; [cite: 109, 110]
+            badge.className = action === 'VÀO' ? "px-8 py-3 rounded-2xl text-xs font-black bg-[#005691] text-white" : "px-8 py-3 rounded-2xl text-xs font-black bg-[#ed1c24] text-white"; [cite: 111]
+            
+            renderEmployeeGrid(); updateStats(); [cite: 112]
+            resetTimeout = setTimeout(() => card.classList.add('hidden'), 5000); [cite: 117]
+        }
+
+        function renderEmployeeGrid() {
+            const grid = document.getElementById('employee-grid');
+            const employees = Object.values(logs); [cite: 120]
+            if (employees.length === 0) return; [cite: 120]
+            grid.innerHTML = employees.map(e => {
+                const isOnline = e.timeIn && !e.timeOut; [cite: 121]
+                return `
+                    <div class="emp-card p-5 rounded-3xl border ${isOnline ? 'border-blue-200 bg-blue-50' : 'bg-white opacity-60'} shadow-sm">
+                        <div class="flex items-center gap-4">
+                            <div class="relative">
+                                <div class="w-14 h-14 ${isOnline ? 'bg-[#005691]' : 'bg-slate-200'} rounded-2xl flex items-center justify-center text-white">
+                                    <i data-lucide="user" class="w-7 h-7"></i> [cite: 122]
+                                </div>
+                                ${isOnline ? '<div class="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white pulse-online"></div>' : ''} [cite: 123]
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="font-black text-slate-800 text-sm truncate uppercase">${e.name}</h4> [cite: 124]
+                                <p class="text-[9px] font-black text-[#005691] uppercase">${e.dept}</p> [cite: 126]
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            lucide.createIcons(); [cite: 131]
+        }
+
+        function updateStats() {
+            const employees = Object.values(logs); [cite: 113]
+            document.getElementById('stat-present').innerText = employees.filter(e => e.timeIn && !e.timeOut).length; [cite: 114, 115]
+            document.getElementById('stat-total-emp').innerText = employees.length; [cite: 115]
+        }
+
+        async function syncToSheets(emp, action) {
+            const url = document.getElementById('script-url').value.trim(); [cite: 139]
+            if (!url) return; [cite: 139]
+            localStorage.setItem('qr_sync_url_v2', url); [cite: 140]
+            try { fetch(url, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action, id: emp.id, name: emp.name, time: getT(new Date()) }) }); } catch(e) {} [cite: 141, 142]
+        }
+
+        function simulateScan() {
+            const names = ["Trần Văn Hùng", "Nguyễn Thị Mai", "Lê Minh Tuấn"]; [cite: 143]
+            const id = "NV" + Math.floor(100 + Math.random() * 900); [cite: 144]
+            handleScanResult(`${id}|${names[Math.floor(Math.random()*3)]}|Quầy hàng`);
+        }
     </script>
 </body>
 </html>
