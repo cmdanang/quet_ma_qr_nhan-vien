@@ -6,226 +6,137 @@
     <title>Co.opmart Đà Nẵng - Quản Lý Nhân Sự</title>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
     <style>
-        :root {
-            --coop-blue: #005691;
-            --coop-red: #ed1c24;
-            --success: #27ae60;
-            --light-bg: #f1f5f9;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background: var(--light-bg);
-            margin: 0;
-            color: #1e293b;
-        }
-
-        /* Header chuyên nghiệp */
-        header {
-            background: white;
-            padding: 10px 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 4px solid var(--coop-red);
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-        }
-
-        .brand { display: flex; align-items: center; gap: 15px; }
-        #logo-img { height: 55px; cursor: pointer; border: 1px solid #e2e8f0; padding: 3px; border-radius: 8px; }
-        .brand-text h1 { color: var(--coop-blue); margin: 0; font-size: 1.3rem; text-transform: uppercase; font-weight: 800; }
-        .brand-text p { margin: 0; color: var(--coop-red); font-size: 0.85rem; font-weight: bold; }
+        :root { --blue: #005691; --red: #ed1c24; --green: #27ae60; --bg: #f1f5f9; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); margin: 0; color: #1e293b; overflow-x: hidden; }
+        
+        /* Header */
+        header { background: #fff; padding: 10px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--red); box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
+        .logo-box { display: flex; align-items: center; gap: 12px; }
+        #logo-img { height: 45px; border: 1px solid #ddd; padding: 3px; border-radius: 6px; cursor: pointer; }
+        .title h1 { color: var(--blue); margin: 0; font-size: 18px; text-transform: uppercase; }
+        .title p { margin: 0; color: var(--red); font-weight: bold; font-size: 11px; }
 
         /* Dashboard Layout */
-        .container {
-            display: grid;
-            grid-template-columns: 380px 1fr;
-            gap: 25px;
-            padding: 25px 5%;
-            max-width: 1600px;
-            margin: auto;
-        }
+        .main { display: grid; grid-template-columns: 360px 1fr; gap: 20px; padding: 20px 5%; max-width: 1600px; margin: auto; }
+        
+        /* Scanner Section */
+        .card { background: #fff; border-radius: 16px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); text-align: center; height: fit-content; position: sticky; top: 85px; }
+        #reader { width: 100%; border-radius: 12px; overflow: hidden; border: 2px solid #eee; background: #000; }
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .btn { padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s; font-size: 13px; }
+        .btn-blue { background: var(--blue); color: #fff; }
+        .btn-red { background: var(--red); color: #fff; }
+        
+        /* Stats Area */
+        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .stat-item { background: var(--blue); color: #fff; padding: 15px; border-radius: 12px; display: flex; align-items: center; gap: 12px; }
+        .stat-item.red { background: var(--red); }
+        .stat-item i { font-size: 24px; opacity: 0.8; }
+        .stat-num { font-size: 24px; font-weight: 800; }
 
-        /* Cột trái: Quét mã */
-        .scanner-section {
-            background: white;
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-            text-align: center;
-            height: fit-content;
-            position: sticky;
-            top: 25px;
-        }
+        /* BỘ LỌC THIẾT KẾ MỚI */
+        .filter-container { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .filter-label { font-size: 13px; font-weight: bold; color: var(--blue); margin-bottom: 10px; display: block; text-transform: uppercase; }
+        .filter-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+        .chip { padding: 8px 16px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; color: #475569; }
+        .chip.active { background: var(--blue); color: white; border-color: var(--blue); box-shadow: 0 4px 6px rgba(0,86,145,0.2); }
+        .chip:hover { background: #e2e8f0; }
 
-        #reader {
-            width: 100%;
-            border-radius: 15px;
-            overflow: hidden;
-            border: 2px solid #f1f5f9;
-            background: #000;
-        }
-
-        .btn-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .btn {
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        .btn-blue { background: var(--coop-blue); color: white; }
-        .btn-red { background: var(--coop-red); color: white; }
-        .btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
-
-        /* Cột phải: Thống kê & Danh sách */
-        .display-section { display: flex; flex-direction: column; gap: 20px; }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        .stat-card {
-            background: var(--coop-blue);
-            color: white;
-            padding: 20px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        .stat-card.red { background: var(--coop-red); }
-        .stat-card i { font-size: 2.5rem; opacity: 0.7; }
-        .stat-val { font-size: 2.2rem; font-weight: 800; display: block; }
-
-        .list-card {
-            background: white;
-            border-radius: 20px;
-            padding: 15px;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-            min-height: 450px;
-        }
-
+        /* Table Area */
+        .table-card { background: #fff; border-radius: 16px; padding: 10px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 15px; color: var(--coop-blue); border-bottom: 2px solid #f1f5f9; font-size: 0.8rem; text-transform: uppercase; }
-        td { padding: 15px; border-bottom: 1px solid #f8fafc; font-size: 0.95rem; }
-
-        .badge { padding: 5px 10px; border-radius: 8px; font-weight: bold; font-size: 0.75rem; }
+        th { text-align: left; padding: 12px; color: var(--blue); border-bottom: 2px solid #f1f5f9; font-size: 11px; text-transform: uppercase; }
+        td { padding: 12px; border-bottom: 1px solid #f8fafc; font-size: 13px; }
+        
+        .badge { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 10px; }
         .badge-in { background: #dcfce7; color: #166534; }
         .badge-out { background: #fee2e2; color: #991b1b; }
 
-        /* Hiệu ứng chờ 3 giây */
-        #overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.9);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 10;
-            border-radius: 15px;
-        }
+        /* Loading & Toast */
+        #loading { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 100; border-radius: 12px; }
+        #toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 25px; border-radius: 8px; color: #fff; font-weight: bold; z-index: 1000; display: none; box-shadow: 0 10px 15px rgba(0,0,0,0.2); animation: fadeInUp 0.3s; }
 
-        /* Thông báo */
-        #toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 15px 30px;
-            border-radius: 12px;
-            color: white;
-            font-weight: bold;
-            z-index: 1000;
-            display: none;
-            animation: slideIn 0.3s ease-out;
-            box-shadow: 0 10px 15px rgba(0,0,0,0.2);
-        }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        #hidden-input { position: fixed; top: -100px; opacity: 0; }
 
-        @keyframes slideIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        #hidden-input { position: absolute; opacity: 0; }
+        /* Responsive */
+        @media (max-width: 900px) {
+            .main { grid-template-columns: 1fr; }
+            .card { position: relative; top: 0; }
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="brand">
-        <input type="file" id="upload-logo" hidden accept="image/*">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSuil-KN87kWDOj7jBEXJipuRLwTDhM3Esu8Q&s" title="Nhấp để đổi logo">
-        <div class="brand-text">
+    <div class="logo-box">
+        <input type="file" id="change-logo" hidden accept="image/*">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSuil-KN87kWDOj7jBEXJipuRLwTDhM3Esu8Q&s" id="logo-img" title="Nhấn để đổi Logo">
+        <div class="title">
             <h1>Co.opmart Đà Nẵng</h1>
-            <p><i class="fa-solid fa-clock-rotate-left"></i> QUẢN LÝ THỜI GIAN THỰC</p>
+            <p>QUẢN LÝ NHÂN SỰ CHUYÊN NGHIỆP</p>
         </div>
     </div>
-    <div id="live-clock" style="font-weight: 900; color: var(--coop-blue); font-size: 1.2rem;"></div>
+    <div id="clock" style="font-weight: 800; color: var(--blue); font-size: 14px;"></div>
 </header>
 
-<div class="container">
+<div class="main">
     <div class="left">
-        <div class="scanner-section">
-            <h3 style="margin-top: 0; color: var(--coop-blue);">MÁY QUÉT</h3>
+        <div class="card">
+            <h3 style="margin:0 0 15px 0; color: var(--blue); font-size: 15px;"><i class="fa-solid fa-camera-retro"></i> TRẠM QUÉT QR</h3>
             <div style="position: relative;">
                 <div id="reader"></div>
-                <div id="overlay">
-                    <i class="fa-solid fa-hourglass-half fa-spin" style="font-size: 2.5rem; color: var(--coop-blue);"></i>
-                    <p style="font-weight: bold; color: var(--coop-blue); margin-top: 10px;">Vui lòng chờ 3s...</p>
+                <div id="loading">
+                    <i class="fa-solid fa-sync fa-spin" style="font-size: 30px; color: var(--blue);"></i>
+                    <p style="font-weight: bold; font-size: 12px; margin-top: 10px;">Đang ghi nhận...</p>
                 </div>
             </div>
             <div class="btn-group">
-                <button class="btn btn-blue" onclick="startCamera('environment')"><i class="fa-solid fa-camera"></i> CAM SAU</button>
-                <button class="btn btn-blue" onclick="startCamera('user')"><i class="fa-solid fa-video"></i> CAM TRƯỚC</button>
-                <button class="btn btn-red" style="grid-column: span 2;" onclick="stopCamera()"><i class="fa-solid fa-power-off"></i> TẮT CAMERA</button>
+                <button class="btn btn-blue" onclick="startCamera('environment')"><i class="fa-solid fa-video"></i> CAM SAU</button>
+                <button class="btn btn-blue" onclick="startCamera('user')"><i class="fa-solid fa-user-circle"></i> CAM TRƯỚC</button>
+                <button class="btn btn-red" style="grid-column: span 2;" onclick="stopCamera()"><i class="fa-solid fa-stop-circle"></i> DỪNG</button>
             </div>
-            <p style="font-size: 11px; color: #94a3b8; margin-top: 15px;">Hỗ trợ súng quét mã USB/Bluetooth</p>
         </div>
     </div>
 
     <div class="right">
-        <div class="stats-grid">
-            <div class="stat-card">
-                <i class="fa-solid fa-user-clock"></i>
+        <div class="stats">
+            <div class="stat-item">
+                <i class="fa-solid fa-walking"></i>
                 <div>
-                    <span class="stat-val" id="count-in">0</span>
-                    <span style="font-size: 0.8rem; font-weight: bold; text-transform: uppercase;">Đang trong ca</span>
+                    <span class="stat-num" id="active-num">0</span><br>
+                    <span style="font-size: 10px; font-weight: bold;">ĐANG TRONG CA</span>
                 </div>
             </div>
-            <div class="stat-card red">
-                <i class="fa-solid fa-calendar-day"></i>
+            <div class="stat-item red">
+                <i class="fa-solid fa-calendar-alt"></i>
                 <div>
-                    <span class="stat-val" id="current-date">--/--</span>
-                    <span style="font-size: 0.8rem; font-weight: bold; text-transform: uppercase;">Ngày làm việc</span>
+                    <span class="stat-num" id="today-txt">--/--</span><br>
+                    <span style="font-size: 10px; font-weight: bold;">NGÀY HÔM NAY</span>
                 </div>
             </div>
         </div>
 
-        <div class="list-card">
+        <div class="filter-container">
+            <span class="filter-label"><i class="fa-solid fa-filter"></i> Lọc theo bộ phận</span>
+            <div id="filter-chips" class="filter-chips">
+                <div class="chip active" onclick="setFilter('Tất cả', this)">Tất cả</div>
+                </div>
+        </div>
+
+        <div class="table-card">
             <table>
                 <thead>
                     <tr>
                         <th>Nhân Viên</th>
                         <th>Bộ Phận</th>
-                        <th>Vào Ca</th>
-                        <th>Ra Ca</th>
-                        <th style="text-align: center;">Phút</th>
+                        <th>Giờ Vào</th>
+                        <th>Giờ Ra</th>
+                        <th style="text-align: center;">Tổng (P)</th>
                     </tr>
                 </thead>
-                <tbody id="table-body">
-                    <tr><td colspan="5" style="text-align: center; padding: 100px; color: #cbd5e1;">Đang chờ dữ liệu...</td></tr>
-                </tbody>
+                <tbody id="log-table"></tbody>
             </table>
         </div>
     </div>
@@ -235,122 +146,108 @@
 <div id="toast"></div>
 
 <script>
-    // --- CẤU HÌNH ---
+    // --- CẤU HÌNH URL ---
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx_UPL3vk4NSh2RzegwNaSBwXeg1DobYZrf_qs2K0hKf1WNNVmbwvDRB7qI-KejGx_8/exec";
     
-    let scanner;
+    let html5QrCode;
     let isProcessing = false;
-    let lastDate = new Date().toLocaleDateString('vi-VN');
+    let rawData = []; 
+    let currentFilter = "Tất cả";
     const hInput = document.getElementById('hidden-input');
 
-    // 1. Quản lý Camera (Tối ưu cho thiết bị di động)
-    function startCamera(mode) {
-        if (scanner) scanner.clear();
-        scanner = new Html5Qrcode("reader");
-        const config = { fps: 20, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 };
-        scanner.start({ facingMode: mode }, config, (text) => {
-            if (!isProcessing) handleScan(text);
-        }).catch(err => alert("Lỗi: Hãy chạy App trên HTTPS hoặc cấp quyền camera!"));
+    async function startCamera(facing) {
+        if (html5QrCode) await html5QrCode.stop();
+        html5QrCode = new Html5Qrcode("reader");
+        html5QrCode.start({ facingMode: facing }, { fps: 20, qrbox: 250 }, (text) => {
+            if (!isProcessing) handleData(text);
+        }).catch(() => alert("Lỗi camera: Hãy dùng HTTPS và cho phép truy cập."));
     }
 
-    function stopCamera() { if(scanner) scanner.stop(); }
+    function stopCamera() { if(html5QrCode) html5QrCode.stop(); }
 
-    // 2. Quản lý máy quét vật lý
     document.addEventListener('click', () => hInput.focus());
     hInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
-            if(!isProcessing) handleScan(hInput.value);
+            if(!isProcessing) handleData(hInput.value);
             hInput.value = '';
         }
     });
 
-    // 3. Xử lý dữ liệu
-    async function handleScan(id) {
+    async function handleData(id) {
         isProcessing = true;
-        document.getElementById('overlay').style.display = 'flex';
-        
+        document.getElementById('loading').style.display = 'flex';
         try {
-            // Gửi dữ liệu bằng POST
-            await fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                body: JSON.stringify({ id: id })
-            });
-            
-            showToast("Đã ghi nhận mã: " + id, "var(--coop-blue)");
-            setTimeout(loadLogs, 1000); // Đợi 1s để Sheet cập nhật rồi tải lại bảng
-
-        } catch (e) {
-            showToast("Lỗi kết nối Server!", "var(--coop-red)");
-        }
-
-        // Chờ 3 giây để tránh quét trùng
-        setTimeout(() => {
-            isProcessing = false;
-            document.getElementById('overlay').style.display = 'none';
-        }, 3000);
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ id: id }) });
+            showToast("Ghi nhận mã: " + id, "var(--blue)");
+            setTimeout(loadLogs, 1200);
+        } catch (e) { showToast("Lỗi Server!", "var(--red)"); }
+        setTimeout(() => { isProcessing = false; document.getElementById('loading').style.display = 'none'; }, 3000);
     }
 
-    // 4. Đồng bộ dữ liệu & Tự động Reset ngày mới
     async function loadLogs() {
-        // KIỂM TRA RESET NGÀY MỚI
         const today = new Date().toLocaleDateString('vi-VN');
-        if (today !== lastDate) {
-            lastDate = today;
-            document.getElementById('table-body').innerHTML = ''; // Clear bảng khi qua ngày mới
-            document.getElementById('count-in').innerText = '0';
-        }
-        document.getElementById('current-date').innerText = today;
+        document.getElementById('today-txt').innerText = today;
 
         try {
             const res = await fetch(SCRIPT_URL);
             const data = await res.json();
+            rawData = data.allData;
+            document.getElementById('active-num').innerText = data.activeCount;
             
-            document.getElementById('count-in').innerText = data.activeCount;
-            const tbody = document.getElementById('table-body');
-            
-            if (data.allData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 100px; color: #cbd5e1;">Hôm nay chưa có lượt quét nào</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = data.allData.map(row => `
-                <tr style="animation: slideIn 0.3s ease-out">
-                    <td><strong>${row.name}</strong><br><small style="color:#64748b">${row.id}</small></td>
-                    <td>${row.dept}</td>
-                    <td><span class="badge badge-in">${row.timeIn.split(' ')[0]}</span></td>
-                    <td><span class="badge badge-out">${row.timeOut ? row.timeOut.split(' ')[0] : '---'}</span></td>
-                    <td style="text-align: center; font-weight: 800; color: var(--success)">
-                        ${row.totalMins || '...'}
-                    </td>
-                </tr>
-            `).join('');
-        } catch (e) { console.log("Đang đồng bộ..."); }
+            updateFilterChips(rawData);
+            renderTable();
+        } catch (e) { console.warn("Syncing..."); }
     }
 
-    // Tiện ích bổ sung
+    // Tự động tạo nút lọc dựa trên dữ liệu thực tế
+    function updateFilterChips(data) {
+        const container = document.getElementById('filter-chips');
+        const depts = ["Tất cả", ...new Set(data.map(item => item.dept))];
+        
+        container.innerHTML = depts.map(d => `
+            <div class="chip ${currentFilter === d ? 'active' : ''}" 
+                 onclick="setFilter('${d}', this)">${d}</div>
+        `).join('');
+    }
+
+    function setFilter(dept, el) {
+        currentFilter = dept;
+        document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        renderTable();
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('log-table');
+        const filtered = currentFilter === "Tất cả" 
+            ? rawData 
+            : rawData.filter(item => item.dept === currentFilter);
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:40px; color:#94a3b8;">Không có dữ liệu</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = filtered.map(row => `
+            <tr style="animation: fadeInUp 0.3s">
+                <td><strong>${row.name}</strong><br><small style="color:#94a3b8">${row.id}</small></td>
+                <td><span style="color:var(--blue); font-weight:600">${row.dept}</span></td>
+                <td><span class="badge badge-in">${row.timeIn.split(' ')[0]}</span></td>
+                <td><span class="badge badge-out">${row.timeOut ? row.timeOut.split(' ')[0] : '---'}</span></td>
+                <td style="text-align:center; font-weight:bold; color:var(--green)">${row.totalMins || '-'}</td>
+            </tr>
+        `).join('');
+    }
+
     function showToast(msg, color) {
         const t = document.getElementById('toast');
         t.innerText = msg; t.style.background = color; t.style.display = 'block';
         setTimeout(() => t.style.display = 'none', 3000);
     }
 
-    setInterval(() => {
-        document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('vi-VN');
-    }, 1000);
-
-    // Thay logo siêu thị
-    document.getElementById('logo-img').onclick = () => document.getElementById('upload-logo').click();
-    document.getElementById('upload-logo').onchange = (e) => {
-        const reader = new FileReader();
-        reader.onload = (ev) => document.getElementById('logo-img').src = ev.target.result;
-        reader.readAsDataURL(e.target.files[0]);
-    };
-
-    // Tự động làm mới bảng mỗi 5 giây
+    setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleString('vi-VN'); }, 1000);
     setInterval(loadLogs, 5000);
     window.onload = loadLogs;
-
 </script>
 </body>
 </html>
