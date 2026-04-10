@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Co.opmart Đà Nẵng - Quản Lý Nhân Sự</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --coop-blue: #005691;
+            --coop-red: #ed1c24;
+            --success: #27ae60;
+            --light-bg: #f1f5f9;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--light-bg);
+            margin: 0;
+            color: #1e293b;
+        }
+
+        /* Header chuyên nghiệp */
+        header {
+            background: white;
+            padding: 10px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--coop-red);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .brand { display: flex; align-items: center; gap: 15px; }
+        #logo-img { height: 55px; cursor: pointer; border: 1px solid #e2e8f0; padding: 3px; border-radius: 8px; }
+        .brand-text h1 { color: var(--coop-blue); margin: 0; font-size: 1.3rem; text-transform: uppercase; font-weight: 800; }
+        .brand-text p { margin: 0; color: var(--coop-red); font-size: 0.85rem; font-weight: bold; }
+
+        /* Dashboard Layout */
+        .container {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 25px;
+            padding: 25px 5%;
+            max-width: 1600px;
+            margin: auto;
+        }
+
+        /* Cột trái: Quét mã */
+        .scanner-section {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            text-align: center;
+            height: fit-content;
+            position: sticky;
+            top: 25px;
+        }
+
+        #reader {
+            width: 100%;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid #f1f5f9;
+            background: #000;
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-blue { background: var(--coop-blue); color: white; }
+        .btn-red { background: var(--coop-red); color: white; }
+        .btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+        /* Cột phải: Thống kê & Danh sách */
+        .display-section { display: flex; flex-direction: column; gap: 20px; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .stat-card {
+            background: var(--coop-blue);
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .stat-card.red { background: var(--coop-red); }
+        .stat-card i { font-size: 2.5rem; opacity: 0.7; }
+        .stat-val { font-size: 2.2rem; font-weight: 800; display: block; }
+
+        .list-card {
+            background: white;
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            min-height: 450px;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 15px; color: var(--coop-blue); border-bottom: 2px solid #f1f5f9; font-size: 0.8rem; text-transform: uppercase; }
+        td { padding: 15px; border-bottom: 1px solid #f8fafc; font-size: 0.95rem; }
+
+        .badge { padding: 5px 10px; border-radius: 8px; font-weight: bold; font-size: 0.75rem; }
+        .badge-in { background: #dcfce7; color: #166534; }
+        .badge-out { background: #fee2e2; color: #991b1b; }
+
+        /* Hiệu ứng chờ 3 giây */
+        #overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.9);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            border-radius: 15px;
+        }
+
+        /* Thông báo */
+        #toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 30px;
+            border-radius: 12px;
+            color: white;
+            font-weight: bold;
+            z-index: 1000;
+            display: none;
+            animation: slideIn 0.3s ease-out;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.2);
+        }
+
+        @keyframes slideIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        #hidden-input { position: absolute; opacity: 0; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="brand">
+        <input type="file" id="upload-logo" hidden accept="image/*">
+        <img src="https://media.loveitopcdn.com/3807/logo-coopmart-compressed.jpg" id="logo-img" title="Nhấp để đổi logo">
+        <div class="brand-text">
+            <h1>Co.opmart Đà Nẵng</h1>
+            <p><i class="fa-solid fa-clock-rotate-left"></i> QUẢN LÝ THỜI GIAN THỰC</p>
+        </div>
+    </div>
+    <div id="live-clock" style="font-weight: 900; color: var(--coop-blue); font-size: 1.2rem;"></div>
+</header>
+
+<div class="container">
+    <div class="left">
+        <div class="scanner-section">
+            <h3 style="margin-top: 0; color: var(--coop-blue);">MÁY QUÉT</h3>
+            <div style="position: relative;">
+                <div id="reader"></div>
+                <div id="overlay">
+                    <i class="fa-solid fa-hourglass-half fa-spin" style="font-size: 2.5rem; color: var(--coop-blue);"></i>
+                    <p style="font-weight: bold; color: var(--coop-blue); margin-top: 10px;">Vui lòng chờ 3s...</p>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-blue" onclick="startCamera('environment')"><i class="fa-solid fa-camera"></i> CAM SAU</button>
+                <button class="btn btn-blue" onclick="startCamera('user')"><i class="fa-solid fa-video"></i> CAM TRƯỚC</button>
+                <button class="btn btn-red" style="grid-column: span 2;" onclick="stopCamera()"><i class="fa-solid fa-power-off"></i> TẮT CAMERA</button>
+            </div>
+            <p style="font-size: 11px; color: #94a3b8; margin-top: 15px;">Hỗ trợ súng quét mã USB/Bluetooth</p>
+        </div>
+    </div>
+
+    <div class="right">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <i class="fa-solid fa-user-clock"></i>
+                <div>
+                    <span class="stat-val" id="count-in">0</span>
+                    <span style="font-size: 0.8rem; font-weight: bold; text-transform: uppercase;">Đang trong ca</span>
+                </div>
+            </div>
+            <div class="stat-card red">
+                <i class="fa-solid fa-calendar-day"></i>
+                <div>
+                    <span class="stat-val" id="current-date">--/--</span>
+                    <span style="font-size: 0.8rem; font-weight: bold; text-transform: uppercase;">Ngày làm việc</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="list-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nhân Viên</th>
+                        <th>Bộ Phận</th>
+                        <th>Vào Ca</th>
+                        <th>Ra Ca</th>
+                        <th style="text-align: center;">Phút</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <tr><td colspan="5" style="text-align: center; padding: 100px; color: #cbd5e1;">Đang chờ dữ liệu...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<input type="text" id="hidden-input" autofocus>
+<div id="toast"></div>
+
+<script>
+    // --- CẤU HÌNH ---
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw57S_C5QWzIknRXdwQ12BSuBEFstvZtmZHczM4WI4QLaPYyR3kKCau_VnSoefDhMnpxg/exec";
+    
+    let scanner;
+    let isProcessing = false;
+    let lastDate = new Date().toLocaleDateString('vi-VN');
+    const hInput = document.getElementById('hidden-input');
+
+    // 1. Quản lý Camera (Tối ưu cho thiết bị di động)
+    function startCamera(mode) {
+        if (scanner) scanner.clear();
+        scanner = new Html5Qrcode("reader");
+        const config = { fps: 20, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 };
+        scanner.start({ facingMode: mode }, config, (text) => {
+            if (!isProcessing) handleScan(text);
+        }).catch(err => alert("Lỗi: Hãy chạy App trên HTTPS hoặc cấp quyền camera!"));
+    }
+
+    function stopCamera() { if(scanner) scanner.stop(); }
+
+    // 2. Quản lý máy quét vật lý
+    document.addEventListener('click', () => hInput.focus());
+    hInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            if(!isProcessing) handleScan(hInput.value);
+            hInput.value = '';
+        }
+    });
+
+    // 3. Xử lý dữ liệu
+    async function handleScan(id) {
+        isProcessing = true;
+        document.getElementById('overlay').style.display = 'flex';
+        
+        try {
+            // Gửi dữ liệu bằng POST
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify({ id: id })
+            });
+            
+            showToast("Đã ghi nhận mã: " + id, "var(--coop-blue)");
+            setTimeout(loadLogs, 1000); // Đợi 1s để Sheet cập nhật rồi tải lại bảng
+
+        } catch (e) {
+            showToast("Lỗi kết nối Server!", "var(--coop-red)");
+        }
+
+        // Chờ 3 giây để tránh quét trùng
+        setTimeout(() => {
+            isProcessing = false;
+            document.getElementById('overlay').style.display = 'none';
+        }, 3000);
+    }
+
+    // 4. Đồng bộ dữ liệu & Tự động Reset ngày mới
+    async function loadLogs() {
+        // KIỂM TRA RESET NGÀY MỚI
+        const today = new Date().toLocaleDateString('vi-VN');
+        if (today !== lastDate) {
+            lastDate = today;
+            document.getElementById('table-body').innerHTML = ''; // Clear bảng khi qua ngày mới
+            document.getElementById('count-in').innerText = '0';
+        }
+        document.getElementById('current-date').innerText = today;
+
+        try {
+            const res = await fetch(SCRIPT_URL);
+            const data = await res.json();
+            
+            document.getElementById('count-in').innerText = data.activeCount;
+            const tbody = document.getElementById('table-body');
+            
+            if (data.allData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 100px; color: #cbd5e1;">Hôm nay chưa có lượt quét nào</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = data.allData.map(row => `
+                <tr style="animation: slideIn 0.3s ease-out">
+                    <td><strong>${row.name}</strong><br><small style="color:#64748b">${row.id}</small></td>
+                    <td>${row.dept}</td>
+                    <td><span class="badge badge-in">${row.timeIn.split(' ')[0]}</span></td>
+                    <td><span class="badge badge-out">${row.timeOut ? row.timeOut.split(' ')[0] : '---'}</span></td>
+                    <td style="text-align: center; font-weight: 800; color: var(--success)">
+                        ${row.totalMins || '...'}
+                    </td>
+                </tr>
+            `).join('');
+        } catch (e) { console.log("Đang đồng bộ..."); }
+    }
+
+    // Tiện ích bổ sung
+    function showToast(msg, color) {
+        const t = document.getElementById('toast');
+        t.innerText = msg; t.style.background = color; t.style.display = 'block';
+        setTimeout(() => t.style.display = 'none', 3000);
+    }
+
+    setInterval(() => {
+        document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('vi-VN');
+    }, 1000);
+
+    // Thay logo siêu thị
+    document.getElementById('logo-img').onclick = () => document.getElementById('upload-logo').click();
+    document.getElementById('upload-logo').onchange = (e) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => document.getElementById('logo-img').src = ev.target.result;
+        reader.readAsDataURL(e.target.files[0]);
+    };
+
+    // Tự động làm mới bảng mỗi 5 giây
+    setInterval(loadLogs, 5000);
+    window.onload = loadLogs;
+
+</script>
+</body>
+</html>
