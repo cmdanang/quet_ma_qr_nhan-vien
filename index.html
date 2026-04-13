@@ -3,168 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Co.opmart Đà Nẵng - Quản Lý Nhân Sự V5</title>
+    <title>Co.opmart Đà Nẵng - V39.0</title>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root { --blue: #005691; --red: #ed1c24; --green: #27ae60; --bg: #f1f5f9; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); margin: 0; color: #1e293b; overflow-x: hidden; }
-        header { background: #fff; padding: 10px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--red); box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
-        .logo-box { display: flex; align-items: center; gap: 12px; }
-        #logo-img { height: 45px; border: 1px solid #ddd; padding: 3px; border-radius: 6px; }
-        .title h1 { color: var(--blue); margin: 0; font-size: 18px; text-transform: uppercase; }
-        .main { display: grid; grid-template-columns: 360px 1fr; gap: 20px; padding: 20px 5%; max-width: 1600px; margin: auto; }
-        .card { background: #fff; border-radius: 16px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; position: sticky; top: 85px; }
-        #reader { width: 100%; border-radius: 12px; overflow: hidden; background: #000; }
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .btn { padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; color: #fff; }
-        .btn-blue { background: var(--blue); } .btn-red { background: var(--red); }
-        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .stat-item { background: var(--blue); color: #fff; padding: 15px; border-radius: 12px; display: flex; align-items: center; gap: 12px; }
-        .stat-item.red { background: var(--red); }
-        .filter-container { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .filter-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-        .chip { padding: 8px 18px; background: #f1f5f9; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; color: #475569; border: 1px solid #e2e8f0; }
-        .chip.active { background: var(--blue); color: white; border-color: var(--blue); }
-        .table-card { background: #fff; border-radius: 16px; padding: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow-x: auto; }
+        :root { --blue: #005691; --red: #ed1c24; --green: #27ae60; --orange: #f39c12; --bg: #f4f7f9; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; }
+        
+        /* Header & Ngày tháng */
+        header { background: #fff; padding: 10px 4%; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--red); box-shadow: 0 2px 10px rgba(0,0,0,0.1); sticky; top: 0; z-index: 100; }
+        .date-box { text-align: right; border-left: 2px solid #eee; padding-left: 15px; }
+        #txt-time { font-size: 26px; font-weight: 900; color: var(--blue); }
+        #txt-full-date { font-size: 14px; color: #666; font-weight: bold; }
+
+        .main-container { display: grid; grid-template-columns: 350px 1fr; gap: 20px; padding: 20px; }
+        .card { background: #fff; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+
+        /* Nút lọc bộ phận */
+        .filter-container { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding: 5px 0; }
+        .filter-btn { padding: 8px 18px; border: 2px solid var(--blue); background: #fff; color: var(--blue); border-radius: 20px; cursor: pointer; font-weight: bold; white-space: nowrap; transition: 0.3s; }
+        .filter-btn.active { background: var(--blue); color: #fff; box-shadow: 0 4px 10px rgba(0,86,145,0.2); }
+
+        /* Thông báo nổi */
+        #emp-toast { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); color: #fff; padding: 20px 40px; border-radius: 15px; z-index: 2000; display: none; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); min-width: 350px; }
+
+        #reader { width: 100% !important; border-radius: 12px; display: none; }
         table { width: 100%; border-collapse: collapse; min-width: 900px; }
-        th { text-align: left; padding: 12px; color: var(--blue); border-bottom: 2px solid #f1f5f9; font-size: 11px; text-transform: uppercase; }
-        td { padding: 12px; border-bottom: 1px solid #f8fafc; font-size: 13px; }
-        .badge { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 10px; color: #fff; }
-        .b-blue { background: #3b82f6; } .b-orange { background: #f59e0b; } .b-green { background: #10b981; } .b-red { background: #ef4444; }
-        #toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 25px; border-radius: 8px; color: #fff; font-weight: bold; display: none; z-index: 1000; }
-        #hidden-input { position: fixed; top: -100px; opacity: 0; }
-        @media (max-width: 900px) { .main { grid-template-columns: 1fr; } .card { position: relative; top: 0; } }
+        th { background: #f8fafc; color: var(--blue); padding: 12px; text-align: left; font-size: 12px; border-bottom: 3px solid #eee; }
+        td { padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
+        .badge { padding: 5px 10px; border-radius: 5px; color: #fff; font-weight: bold; font-size: 11px; display: inline-block; min-width: 70px; text-align: center; }
+        
+        #loader { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); display:none; justify-content:center; align-items:center; z-index:999; }
+        #hidden-input { position: fixed; opacity: 0; }
     </style>
 </head>
 <body>
 
+<div id="emp-toast">
+    <div id="t-name" style="font-size: 14px; opacity: 0.9;"></div>
+    <div id="t-msg" style="font-size: 26px; font-weight: 900; margin-top:5px;"></div>
+</div>
+
+<div id="loader"><i class="fa fa-spinner fa-spin fa-3x" style="color:var(--blue)"></i></div>
+<input type="text" id="hidden-input" autofocus>
+
 <header>
-    <div class="logo-box">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSuil-KN87kWDOj7jBEXJipuRLwTDhM3Esu8Q&s" id="logo-img">
-        <div class="title"><h1>Co.opmart Đà Nẵng</h1><p>QUẢN LÝ NHÂN SỰ</p></div>
+    <div style="display:flex; align-items:center; gap:12px;">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSuil-KN87kWDOj7jBEXJipuRLwTDhM3Esu8Q&s" height="40">
+        <b style="color:var(--blue); font-size:22px;">CO.OPMART ĐÀ NẴNG</b>
     </div>
-    <div id="clock" style="font-weight: 800; color: var(--blue);"></div>
+    <div class="date-box">
+        <div id="txt-time">00:00:00</div>
+        <div id="txt-full-date">...</div>
+    </div>
 </header>
 
-<div class="main">
-    <div class="left">
+<div class="main-container">
+    <div class="side">
         <div class="card">
-            <h3 style="margin:0 0 15px 0; color: var(--blue); font-size: 15px;"><i class="fa-solid fa-qrcode"></i> TRẠM QUÉT QR</h3>
-            <div id="reader"></div>
-            <div class="btn-group">
-                <button class="btn btn-blue" onclick="startCamera('environment')">CAM SAU</button>
-                <button class="btn btn-blue" onclick="startCamera('user')">CAM TRƯỚC</button>
+            <h4 style="margin:0 0 15px 0; color:var(--blue)">THIẾT BỊ QUÉT</h4>
+            <div style="display:flex; gap:10px; margin-bottom:15px;">
+                <button class="filter-btn active" id="btn-scan" style="flex:1" onclick="setDevice('SCAN')">MÁY SCAN</button>
+                <button class="filter-btn" id="btn-cam" style="flex:1" onclick="setDevice('CAM')">CAMERA</button>
             </div>
+            <div id="reader"></div>
+            <div id="scan-note" style="text-align:center; padding:20px; color:#999; border:2px dashed #eee; border-radius:10px;">Sẵn sàng nhận tín hiệu...</div>
         </div>
     </div>
-
-    <div class="right">
-        <div class="stats">
-            <div class="stat-item"><i class="fa-solid fa-users"></i><div><span class="stat-num" id="active-num">0</span><br><span style="font-size:10px">ĐANG TRONG CA</span></div></div>
-            <div class="stat-item red"><i class="fa-solid fa-clock"></i><div><span class="stat-num" id="today-txt">--/--</span><br><span style="font-size:10px">NGÀY HIỆN TẠI</span></div></div>
-        </div>
-
-        <div class="filter-container">
-            <span style="font-size: 12px; font-weight: bold; color: var(--blue);">BỘ PHẬN:</span>
-            <div id="filter-chips" class="filter-chips" style="margin-top:10px;">
-                <div class="chip active" onclick="setFilter('Tất cả', this)">Tất cả</div>
-            </div>
-        </div>
-
-        <div class="table-card">
+    <div class="content">
+        <div id="filter-box" class="filter-container"></div>
+        
+        <div class="card" style="overflow-x:auto;">
             <table>
                 <thead>
                     <tr>
-                        <th>Ngày</th>
-                        <th>Nhân Viên / NCC</th>
-                        <th>Bộ Phận</th>
-                        <th>Vào Ca</th>
-                        <th>Ra Ăn</th>
-                        <th>Vào Ăn</th>
-                        <th>Ra Ca</th>
-                        <th>Tổng</th>
+                        <th>Nhân viên</th>
+                        <th>Bộ phận</th>
+                        <th>1. Vào (E)</th>
+                        <th>2. Ăn Ra (F)</th>
+                        <th>3. Ăn Vào (G)</th>
+                        <th>4. Ra Về (H)</th>
+                        <th>Tổng Giờ</th>
                     </tr>
                 </thead>
-                <tbody id="log-table"></tbody>
+                <tbody id="table-body"></tbody>
             </table>
         </div>
     </div>
 </div>
 
-<input type="text" id="hidden-input" autofocus>
-<div id="toast"></div>
-
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz733uMiJ-Gqn4m99-qyMuVRZcMNF3UR6WucHE6QcKEdKHvd8y9bTzTFss_riTWPm3VMg/exec";
-    let html5QrCode, isProcessing = false, rawData = [], currentFilter = "Tất cả";
-    const hInput = document.getElementById('hidden-input');
+    const API = "https://script.google.com/macros/s/AKfycbx_oDDpA0O5aN77YXtIsvoLK-VpsKl3GMxW88ZcmWBYEoLlH1t01ivLAJqS9vMUTJw/exec";
+    let rawData = [], currentFilter = 'TẤT CẢ', isLock = false, mode = 'SCAN', scanner;
 
-    async function startCamera(facing) {
-        if (html5QrCode) await html5QrCode.stop();
-        html5QrCode = new Html5Qrcode("reader");
-        html5QrCode.start({ facingMode: facing }, { fps: 20, qrbox: 250 }, (text) => { if (!isProcessing) handleData(text); });
+    // Cập nhật đồng hồ và ngày tháng
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('txt-time').innerText = now.toLocaleTimeString('vi-VN');
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('txt-full-date').innerText = now.toLocaleDateString('vi-VN', options);
+    }
+    setInterval(updateClock, 1000); updateClock();
+
+    function setDevice(m) {
+        mode = m;
+        document.getElementById('btn-scan').classList.toggle('active', m === 'SCAN');
+        document.getElementById('btn-cam').classList.toggle('active', m === 'CAM');
+        document.getElementById('reader').style.display = (m === 'CAM') ? 'block' : 'none';
+        document.getElementById('scan-note').style.display = (m === 'SCAN') ? 'block' : 'none';
+        if (m === 'CAM') startCam(); else if (scanner) scanner.clear();
+        focusInp();
     }
 
-    document.addEventListener('click', () => hInput.focus());
-    hInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { handleData(hInput.value); hInput.value = ''; } });
+    function focusInp() { document.getElementById('hidden-input').focus(); }
+    document.addEventListener('click', focusInp);
 
-    async function handleData(id) {
-        isProcessing = true;
-        showToast("Đang ghi nhận: " + id, "var(--blue)");
-        try {
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ id: id }) });
-            setTimeout(loadLogs, 1000);
-        } catch (e) { showToast("Lỗi kết nối!", "var(--red)"); }
-        setTimeout(() => isProcessing = false, 2500);
+    function startCam() {
+        scanner = new Html5Qrcode("reader");
+        scanner.start({ facingMode: "environment" }, { fps: 20, qrbox: 250 }, (t) => handle(t));
     }
 
-    async function loadLogs() {
-        document.getElementById('today-txt').innerText = new Date().toLocaleDateString('vi-VN');
+    const hInp = document.getElementById('hidden-input');
+    hInp.addEventListener('keypress', e => { if(e.key === 'Enter' && mode === 'SCAN') { handle(hInp.value); hInp.value = ''; }});
+
+    async function handle(id) {
+        if(!id || isLock) return;
+        isLock = true;
+        document.getElementById('loader').style.display = 'flex';
         try {
-            const res = await fetch(SCRIPT_URL);
-            const data = await res.json();
-            rawData = data.allData;
-            document.getElementById('active-num').innerText = data.activeCount;
-            updateFilterChips(rawData);
+            const res = await fetch(API, { method: 'POST', body: JSON.stringify({ id: id.trim() }) });
+            const result = await res.json();
+            if(result.status === "SUCCESS") {
+                showToast(result.name, result.msg);
+                load();
+            }
+            setTimeout(() => { isLock = false; document.getElementById('loader').style.display = 'none'; }, 2000);
+        } catch(e) { isLock = false; document.getElementById('loader').style.display = 'none'; }
+    }
+
+    function showToast(name, msg) {
+        const t = document.getElementById('emp-toast');
+        document.getElementById('t-name').innerText = "NHÂN VIÊN: " + name;
+        document.getElementById('t-msg').innerText = msg;
+        
+        const colors = { "LẦN 1": "#27ae60", "LẦN 2": "#f39c12", "LẦN 3": "#2980b9", "LẦN 4": "#c0392b" };
+        let bg = "#333";
+        for(let k in colors) if(msg.includes(k)) bg = colors[k];
+        t.style.background = bg;
+        t.style.display = 'block';
+        setTimeout(() => { t.style.display = 'none'; }, 4000);
+    }
+
+    async function load() {
+        try {
+            const r = await fetch(API);
+            const d = await r.json();
+            rawData = d.allData;
+            renderFilters();
             renderTable();
-        } catch (e) {}
+        } catch(e) {}
     }
 
-    function updateFilterChips(data) {
-        const container = document.getElementById('filter-chips');
-        const depts = ["Tất cả", ...new Set(data.map(item => item.dept))];
-        container.innerHTML = depts.map(d => `<div class="chip ${currentFilter === d ? 'active' : ''}" onclick="setFilter('${d}', this)">${d}</div>`).join('');
+    function renderFilters() {
+        const depts = ['TẤT CẢ', ...new Set(rawData.map(i => i.dept))];
+        document.getElementById('filter-box').innerHTML = depts.map(d => `
+            <button class="filter-btn ${currentFilter === d ? 'active' : ''}" onclick="filterDept('${d}')">${d}</button>
+        `).join('');
     }
 
-    function setFilter(d, el) {
-        currentFilter = d;
-        document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-        el.classList.add('active');
-        renderTable();
-    }
+    function filterDept(d) { currentFilter = d; renderFilters(); renderTable(); }
 
     function renderTable() {
-        const tbody = document.getElementById('log-table');
-        const filtered = currentFilter === "Tất cả" ? rawData : rawData.filter(i => i.dept === currentFilter);
-        tbody.innerHTML = filtered.map(r => `
+        const filtered = currentFilter === 'TẤT CẢ' ? rawData : rawData.filter(i => i.dept === currentFilter);
+        document.getElementById('table-body').innerHTML = filtered.map(i => `
             <tr>
-                <td style="font-weight:bold; color:#64748b">${r.date}</td>
-                <td><strong>${r.name}</strong><br><small>${r.provider}</small></td>
-                <td><span style="color:var(--blue); font-weight:600">${r.dept}</span></td>
-                <td><span class="badge b-blue">${r.tIn}</span></td>
-                <td><span class="badge b-orange">${r.tAnRa || '--:--'}</span></td>
-                <td><span class="badge b-orange">${r.tAnVao || '--:--'}</span></td>
-                <td><span class="badge b-red">${r.tOut || '--:--'}</span></td>
-                <td style="font-weight:bold; color:var(--green)">${r.total || '-'}</td>
+                <td><b>${i.name}</b><br><small>ID: ${i.id}</small></td>
+                <td style="font-weight:bold; color:var(--blue)">${i.dept}</td>
+                <td><span class="badge" style="background:#27ae60">${i.tIn || '--:--'}</span></td>
+                <td><span class="badge" style="background:#f39c12">${i.tAnRa || '--:--'}</span></td>
+                <td><span class="badge" style="background:#2980b9">${i.tAnVao || '--:--'}</span></td>
+                <td><span class="badge" style="background:#c0392b">${i.tOut || '--:--'}</span></td>
+                <td style="font-weight:900; font-size:16px;">${i.total ? i.total + ' h' : '--'}</td>
             </tr>
         `).join('');
     }
 
-    function showToast(m, c) { const t = document.getElementById('toast'); t.innerText = m; t.style.background = c; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3000); }
-    setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleString('vi-VN'); }, 1000);
-    setInterval(loadLogs, 5000);
-    window.onload = loadLogs;
+    window.onload = () => { setDevice('SCAN'); load(); };
 </script>
 </body>
 </html>
