@@ -3,36 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Co.opmart Đà Nẵng - V39.0</title>
+    <title>Co.opmart Đà Nẵng - V43.0</title>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root { --blue: #005691; --red: #ed1c24; --green: #27ae60; --orange: #f39c12; --bg: #f4f7f9; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; }
         
-        /* Header & Ngày tháng */
-        header { background: #fff; padding: 10px 4%; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--red); box-shadow: 0 2px 10px rgba(0,0,0,0.1); sticky; top: 0; z-index: 100; }
+        header { background: #fff; padding: 10px 4%; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--red); box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        
+        /* Dashboard Số lượng nhân viên */
+        .stat-card { background: var(--blue); color: white; padding: 8px 15px; border-radius: 12px; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 10px rgba(0,86,145,0.3); }
+        .stat-number { font-size: 28px; font-weight: 900; line-height: 1; }
+        .stat-label { font-size: 11px; text-transform: uppercase; font-weight: bold; line-height: 1.1; }
+
         .date-box { text-align: right; border-left: 2px solid #eee; padding-left: 15px; }
         #txt-time { font-size: 26px; font-weight: 900; color: var(--blue); }
-        #txt-full-date { font-size: 14px; color: #666; font-weight: bold; }
 
         .main-container { display: grid; grid-template-columns: 350px 1fr; gap: 20px; padding: 20px; }
         .card { background: #fff; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
 
-        /* Nút lọc bộ phận */
         .filter-container { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding: 5px 0; }
         .filter-btn { padding: 8px 18px; border: 2px solid var(--blue); background: #fff; color: var(--blue); border-radius: 20px; cursor: pointer; font-weight: bold; white-space: nowrap; transition: 0.3s; }
-        .filter-btn.active { background: var(--blue); color: #fff; box-shadow: 0 4px 10px rgba(0,86,145,0.2); }
+        .filter-btn.active { background: var(--blue); color: #fff; }
 
-        /* Thông báo nổi */
         #emp-toast { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); color: #fff; padding: 20px 40px; border-radius: 15px; z-index: 2000; display: none; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); min-width: 350px; }
-
         #reader { width: 100% !important; border-radius: 12px; display: none; }
         table { width: 100%; border-collapse: collapse; min-width: 900px; }
         th { background: #f8fafc; color: var(--blue); padding: 12px; text-align: left; font-size: 12px; border-bottom: 3px solid #eee; }
-        td { padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
+        td { padding: 12px; border-bottom: 1px solid #f0f0f0; }
         .badge { padding: 5px 10px; border-radius: 5px; color: #fff; font-weight: bold; font-size: 11px; display: inline-block; min-width: 70px; text-align: center; }
-        
         #loader { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); display:none; justify-content:center; align-items:center; z-index:999; }
         #hidden-input { position: fixed; opacity: 0; }
     </style>
@@ -48,13 +48,27 @@
 <input type="text" id="hidden-input" autofocus>
 
 <header>
-    <div style="display:flex; align-items:center; gap:12px;">
+    <div style="display:flex; align-items:center; gap:20px;">
+	
         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSuil-KN87kWDOj7jBEXJipuRLwTDhM3Esu8Q&s" height="40">
-        <b style="color:var(--blue); font-size:22px;">CO.OPMART ĐÀ NẴNG</b>
+		 <div class="title-area">
+            <h2>Co.opmart Đà Nẵng</h>
+         
+        </div>
+		
+        <div class="stat-card">
+		
+            <i class="fa fa-user-clock fa-2x"></i>
+			
+            <div>
+                <div class="stat-number" id="count-in-shift">0</div>
+                <div class="stat-label">Đang trong ca<br>làm việc</div>
+            </div>
+        </div>
     </div>
     <div class="date-box">
         <div id="txt-time">00:00:00</div>
-        <div id="txt-full-date">...</div>
+        <div id="txt-full-date" style="font-size: 13px; color: #666; font-weight: bold;">...</div>
     </div>
 </header>
 
@@ -72,7 +86,6 @@
     </div>
     <div class="content">
         <div id="filter-box" class="filter-container"></div>
-        
         <div class="card" style="overflow-x:auto;">
             <table>
                 <thead>
@@ -93,15 +106,13 @@
 </div>
 
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbx_oDDpA0O5aN77YXtIsvoLK-VpsKl3GMxW88ZcmWBYEoLlH1t01ivLAJqS9vMUTJw/exec";
+    const API = "https://script.google.com/macros/s/AKfycbxGRRQPUyA2YGN7OIZOcl273wdGjf-JK5Prpvd-Vj1OUl5jBVt6rMB366S-15QFGZc/exec";
     let rawData = [], currentFilter = 'TẤT CẢ', isLock = false, mode = 'SCAN', scanner;
 
-    // Cập nhật đồng hồ và ngày tháng
     function updateClock() {
         const now = new Date();
         document.getElementById('txt-time').innerText = now.toLocaleTimeString('vi-VN');
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        document.getElementById('txt-full-date').innerText = now.toLocaleDateString('vi-VN', options);
+        document.getElementById('txt-full-date').innerText = now.toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     }
     setInterval(updateClock, 1000); updateClock();
 
@@ -111,17 +122,13 @@
         document.getElementById('btn-cam').classList.toggle('active', m === 'CAM');
         document.getElementById('reader').style.display = (m === 'CAM') ? 'block' : 'none';
         document.getElementById('scan-note').style.display = (m === 'SCAN') ? 'block' : 'none';
-        if (m === 'CAM') startCam(); else if (scanner) scanner.clear();
+        if (m === 'CAM') { scanner = new Html5Qrcode("reader"); scanner.start({ facingMode: "environment" }, { fps: 20, qrbox: 250 }, handle); }
+        else if (scanner) scanner.clear();
         focusInp();
     }
 
     function focusInp() { document.getElementById('hidden-input').focus(); }
     document.addEventListener('click', focusInp);
-
-    function startCam() {
-        scanner = new Html5Qrcode("reader");
-        scanner.start({ facingMode: "environment" }, { fps: 20, qrbox: 250 }, (t) => handle(t));
-    }
 
     const hInp = document.getElementById('hidden-input');
     hInp.addEventListener('keypress', e => { if(e.key === 'Enter' && mode === 'SCAN') { handle(hInp.value); hInp.value = ''; }});
@@ -133,10 +140,7 @@
         try {
             const res = await fetch(API, { method: 'POST', body: JSON.stringify({ id: id.trim() }) });
             const result = await res.json();
-            if(result.status === "SUCCESS") {
-                showToast(result.name, result.msg);
-                load();
-            }
+            if(result.status === "SUCCESS") { showToast(result.name, result.msg); load(); }
             setTimeout(() => { isLock = false; document.getElementById('loader').style.display = 'none'; }, 2000);
         } catch(e) { isLock = false; document.getElementById('loader').style.display = 'none'; }
     }
@@ -145,12 +149,10 @@
         const t = document.getElementById('emp-toast');
         document.getElementById('t-name').innerText = "NHÂN VIÊN: " + name;
         document.getElementById('t-msg').innerText = msg;
-        
         const colors = { "LẦN 1": "#27ae60", "LẦN 2": "#f39c12", "LẦN 3": "#2980b9", "LẦN 4": "#c0392b" };
         let bg = "#333";
         for(let k in colors) if(msg.includes(k)) bg = colors[k];
-        t.style.background = bg;
-        t.style.display = 'block';
+        t.style.background = bg; t.style.display = 'block';
         setTimeout(() => { t.style.display = 'none'; }, 4000);
     }
 
@@ -158,17 +160,22 @@
         try {
             const r = await fetch(API);
             const d = await r.json();
-            rawData = d.allData;
-            renderFilters();
+            // Xử lý dữ liệu trả về (hỗ trợ cả trường hợp script cũ hoặc mới)
+            rawData = d.allData || d; 
+            
+            // LOGIC ĐẾM SỐ NGƯỜI ĐANG TRONG CA:
+            // Đếm những người có tIn (vào) nhưng chưa có tOut (ra)
+            const count = rawData.filter(item => item.tIn && !item.tOut).length;
+            document.getElementById('count-in-shift').innerText = count;
+
+            renderFilters(); 
             renderTable();
         } catch(e) {}
     }
 
     function renderFilters() {
         const depts = ['TẤT CẢ', ...new Set(rawData.map(i => i.dept))];
-        document.getElementById('filter-box').innerHTML = depts.map(d => `
-            <button class="filter-btn ${currentFilter === d ? 'active' : ''}" onclick="filterDept('${d}')">${d}</button>
-        `).join('');
+        document.getElementById('filter-box').innerHTML = depts.map(d => `<button class="filter-btn ${currentFilter === d ? 'active' : ''}" onclick="filterDept('${d}')">${d}</button>`).join('');
     }
 
     function filterDept(d) { currentFilter = d; renderFilters(); renderTable(); }
