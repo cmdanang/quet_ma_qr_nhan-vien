@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Co.opmart Đà Nẵng - V52.5.3 Voice Edition</title>
+    <title>Co.opmart Đà Nẵng - V52.5.4 Platinum</title>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -74,6 +74,7 @@
             <div style="font-size:80px; font-weight:900; line-height:1;" id="val-in">0</div>
         </div>
     </div>
+
     <div class="content">
         <div class="filter-container" id="filter-box">
             <button class="btn-filter active" onclick="filterData('ALL')">TẤT CẢ</button>
@@ -81,7 +82,7 @@
         <div class="card" style="overflow-x:auto; padding:0;">
             <table>
                 <thead>
-                    <tr><th>Họ & Tên</th><th>Bộ phận</th><th>Vào ca</th><th>Nghỉ giữa ca</th><th>Vào lại</th><th> Ra về</th><th>Tổng giờ làm</th></tr>
+                    <tr><th>Họ & Tên</th><th>Bộ phận / Nhà CC</th><th>Vào ca</th><th>Nghỉ</th><th>Lại</th><th>Về</th><th>Tổng giờ</th></tr>
                 </thead>
                 <tbody id="table-body"></tbody>
             </table>
@@ -93,13 +94,11 @@
     const API = "https://script.google.com/macros/s/AKfycbxHqGmt5_kFFOxedSl9wsrIlBb3OJmaAZX9FBvzgXBxFacnw5tkCw5zv_lM80Ue2szxUw/exec";
     let rawData = [], isLock = false, html5QrCode, currentFilter = 'ALL';
 
-    // 1. TÍNH NĂNG ĐỌC TÊN (XIN CHÀO)
     function speakWelcome(name) {
         if ('speechSynthesis' in window) {
             const synth = window.speechSynthesis;
             const utterThis = new SpeechSynthesisUtterance("Xin chào " + name);
-            utterThis.lang = 'vi-VN';
-            utterThis.rate = 0.9; // Tốc độ nói vừa phải
+            utterThis.lang = 'vi-VN'; utterThis.rate = 0.9;
             synth.speak(utterThis);
         }
     }
@@ -129,7 +128,7 @@
             const result = await res.json();
             document.getElementById('loading-overlay').style.display = 'none';
             if(result.status === "SUCCESS") {
-                speakWelcome(result.profile.name); // GỌI HÀM ĐỌC TÊN TẠI ĐÂY
+                speakWelcome(result.profile.name);
                 showProfile(result.profile, result.msg);
                 loadData();
             }
@@ -194,7 +193,10 @@
             return `
             <tr>
                 <td><b>${i.name}</b><br><small style="color:#64748b">ID: ${i.id}</small></td>
-                <td><span style="color:var(--blue-coop); font-weight:bold;">${i.dept}</span></td>
+                <td>
+                    <span style="color:var(--blue-coop); font-weight:bold;">${i.dept}</span><br>
+                    <small style="color:#ef4444; font-weight:600;">NCC: ${i.provider || '---'}</small>
+                </td>
                 <td><span class="badge" style="background:#27ae60">${i.tIn || '--'}</span></td>
                 <td><span class="badge" style="background:#f39c12">${i.tAnRa || '--'}</span></td>
                 <td><span class="badge" style="background:#2980b9">${i.tAnVao || '--'}</span></td>
